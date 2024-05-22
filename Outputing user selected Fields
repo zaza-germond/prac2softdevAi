@@ -1,0 +1,42 @@
+import org.w3c.dom.*;
+import javax.xml.parsers.*;
+import java.io.File;
+import java.util.Scanner;
+
+public class XMLReader {
+
+    public static void main(String[] args) {
+        try {
+            Scanner scanner = new Scanner(System.in);
+            System.out.print("Enter the fields you want to display (comma-separated): ");
+            String input = scanner.nextLine();
+            String[] fields = input.split(",");
+
+            File inputFile = new File("input.xml");
+            DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+            DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+            Document doc = dBuilder.parse(inputFile);
+            doc.getDocumentElement().normalize();
+
+            NodeList nList = doc.getElementsByTagName("exampleElement"); // Replace with actual element name
+
+            for (int temp = 0; temp < nList.getLength(); temp++) {
+                Node nNode = nList.item(temp);
+                if (nNode.getNodeType() == Node.ELEMENT_NODE) {
+                    Element eElement = (Element) nNode;
+                    for (String field : fields) {
+                        field = field.trim();
+                        try {
+                            String value = eElement.getElementsByTagName(field).item(0).getTextContent();
+                            System.out.println(field + ": " + value);
+                        } catch (Exception e) {
+                            System.out.println("Field " + field + " not found.");
+                        }
+                    }
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+}
